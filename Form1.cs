@@ -21,5 +21,10 @@ namespace CCPD_v1._0._0._0._1
         {
 
         }
+        
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("CCPD\nversion - 1.0.0.0.1");
+        }
     }
 }
