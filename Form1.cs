@@ -62,18 +62,14 @@ namespace CCPD_v1._0._0._0._1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            T_K = T_C + 273.15;
-
             richTextBox1.Text = Convert.ToString(VISK);
-
-            label19.Text = Convert.ToString(T_K);
-
 
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             T_C = Convert.ToDouble(numericUpDown1.Value);
+            T_K = T_C + 273.15;
             label19.Text = Convert.ToString(T_K);
             W_SOL = Convert.ToDouble(textBox9.Text);
             VISK = Convert.ToDouble(textBox10.Text);
