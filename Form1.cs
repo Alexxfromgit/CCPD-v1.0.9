@@ -53,6 +53,8 @@ namespace CCPD_v1._0._0._0._1
         double[,] NU_MATRIX = new double[15, 10];
         double[,] LGK = new double[15, 1];
         Int32[,] CHARGE = new Int32[15, 1];
+        double[,] CONC = new double[60, 4];
+        double[,] DATA = new double[60, 1];
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -125,9 +127,9 @@ namespace CCPD_v1._0._0._0._1
             R_A = Convert.ToDouble(textBox17.Text);
             E0_A = Convert.ToDouble(textBox18.Text);
             N_E_B = Convert.ToDouble(textBox19.Text);
-
-            A_DEBYE = DENS * DP / T_K;
-            B_DEBYE = DP / T_K * Math.Sqrt(A_DEBYE);
+                        
+            B_DEBYE = Math.Sqrt(2529.1171 * DENS / DP / T_K);
+            A_DEBYE = B_DEBYE * 36283.167 / DP / T_K;
 
             RT_F = 8.3142 * T_K / 96487 * Math.Log(10) * 1000;
 
@@ -309,6 +311,113 @@ namespace CCPD_v1._0._0._0._1
                     LGK[i, j] = Convert.ToDouble(dataGridView5.Rows[i].Cells[j].Value);
                 }
             }
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            //Вывод в грид6 из массива CHARGE значений
+
+            dataGridView6.RowCount = CHASTIC;
+            dataGridView6.ColumnCount = 1;
+
+            for (int j = 0; j < CHASTIC; j++)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    dataGridView6.Rows[j].Cells[i].Value = CHARGE[j, i].ToString();
+                    dataGridView6.Rows[j].HeaderCell.Value = PARTICLES[0, j];
+                    dataGridView6.Columns[i].HeaderCell.Value = "Z";
+                }
+            }
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            //Вывод из грид6 данных в массив CHARGE
+
+            dataGridView6.RowCount = CHASTIC;
+            dataGridView6.ColumnCount = 1;
+
+            for (int i = 0; i < CHASTIC; i++)
+            {
+                for (int j = 0; j < 1; j++)
+                {
+                    CHARGE[i, j] = Convert.ToInt32(dataGridView6.Rows[i].Cells[j].Value);
+                }
+            }
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            //Эксперементальные данные. Вывод из масива CONC в грид7
+
+            dataGridView7.RowCount = R_ROV;
+            dataGridView7.ColumnCount = KOM_OV;
+
+            for (int j = 0; j < R_ROV; j++)
+            {
+                for (int i = 0; i < KOM_OV; i++)
+                {
+                    dataGridView7.Rows[j].Cells[i].Value = CONC[j, i].ToString();
+                    dataGridView7.Rows[j].HeaderCell.Value = Convert.ToString(j + 1);
+                    dataGridView7.Columns[i].HeaderCell.Value = COMPONENTS[0, i];
+                }
+            }
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            //Вывод значений Эксперементальных данных из датагрид7 в массив CONC
+
+            dataGridView7.RowCount = R_ROV;
+            dataGridView7.ColumnCount = KOM_OV;
+
+            for (int i = 0; i < R_ROV; i++)
+            {
+                for (int j = 0; j < KOM_OV; j++)
+                {
+                    CONC[i, j] = Convert.ToDouble(dataGridView7.Rows[i].Cells[j].Value);
+                }
+            }
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            //Измерения. Вывод из масива DATA в грид8
+
+            dataGridView8.RowCount = R_ROV;
+            dataGridView8.ColumnCount = 1;
+
+            for (int j = 0; j < R_ROV; j++)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    dataGridView8.Rows[j].Cells[i].Value = DATA[j, i].ToString();
+                    dataGridView8.Rows[j].HeaderCell.Value = Convert.ToString(j + 1);
+                    dataGridView8.Columns[i].HeaderCell.Value = "Data";
+                }
+            }
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            //Вывод значений Измерений из датагрид8 в массив DATA
+
+            dataGridView8.RowCount = R_ROV;
+            dataGridView8.ColumnCount = 1;
+
+            for (int i = 0; i < R_ROV; i++)
+            {
+                for (int j = 0; j < 1; j++)
+                {
+                    DATA[i, j] = Convert.ToDouble(dataGridView8.Rows[i].Cells[j].Value);
+                }
+            }
+        }
+
+        private void button20_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
