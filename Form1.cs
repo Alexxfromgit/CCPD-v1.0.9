@@ -15,7 +15,6 @@ namespace CCPD_v1._0._0._0._1
         public Form1()
         {
             InitializeComponent();
-
         }
 
         Int32 KOM_OV = 2;
@@ -54,7 +53,6 @@ namespace CCPD_v1._0._0._0._1
         double[,] NU_MATRIX = new double[15, 10];
         double[,] LGK = new double[15, 1];
         Int32[,] CHARGE = new Int32[15, 1];
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -243,6 +241,7 @@ namespace CCPD_v1._0._0._0._1
         private void button10_Click(object sender, EventArgs e)
         {
             //Стехиометрическая матрица
+
             dataGridView4.RowCount = CHASTIC;
             dataGridView4.ColumnCount = BAZIS;
 
@@ -260,8 +259,6 @@ namespace CCPD_v1._0._0._0._1
                     dataGridView4.Columns[i].HeaderCell.Value = BAS_NAME[0, i];
                 }
             }
-
-
         }
 
         private void button11_Click(object sender, EventArgs e)
@@ -278,7 +275,6 @@ namespace CCPD_v1._0._0._0._1
                     NU_MATRIX[i, j] = Convert.ToDouble(dataGridView4.Rows[i].Cells[j].Value);
                 }
             }
-
         }
                 
         private void button12_Click(object sender, EventArgs e)
@@ -297,8 +293,6 @@ namespace CCPD_v1._0._0._0._1
                     dataGridView5.Columns[i].HeaderCell.Value = lg_k;
                 }
             }
-
-
         }
 
         private void button13_Click(object sender, EventArgs e)
@@ -315,10 +309,6 @@ namespace CCPD_v1._0._0._0._1
                     LGK[i, j] = Convert.ToDouble(dataGridView5.Rows[i].Cells[j].Value);
                 }
             }
-
-
         }
-
-
     }
 }
