@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace CCPD_v1._0._0._0._1
 {
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -18,8 +19,8 @@ namespace CCPD_v1._0._0._0._1
         }
 
         Int32 KOM_OV = 2;
-        Int32 CHASTIC = 3;
-        Int32 BAZIS = 2;
+        Int32 CHASTIC = 5;
+        Int32 BAZIS = 3;
         Int32 R_ROV = 10;
         Int32 DIAGRAMA = 1;
         double S_F = 0.0001;
@@ -55,6 +56,12 @@ namespace CCPD_v1._0._0._0._1
         Int32[,] CHARGE = new Int32[15, 1];
         double[,] CONC = new double[60, 4];
         double[,] DATA = new double[60, 1];
+        double[,] LN_A = new double[60, 8];
+        double[,] CO_BAZIS = new double[60, 8];
+        double[] IONIC = new double[60];
+        double[,] LN_GAMMA = new double[60, 10];
+        double[,] C_EQUIL = new double[60, 10];
+        double[] DELTA_LN_A = new double[10];
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -63,7 +70,7 @@ namespace CCPD_v1._0._0._0._1
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("CCPD\nversion - 1.0.0.0.2");
+            MessageBox.Show("CCPD\nversion - 1.0.0.0.4");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -417,7 +424,154 @@ namespace CCPD_v1._0._0._0._1
 
         private void button20_Click(object sender, EventArgs e)
         {
+            //Подготова начальных значений 
+            double s, s1, s3, sum_delta;
 
+            for (int k = 1; k <= R_ROV; k++)
+            {
+                for (int j = 1; j <= BAZIS; j++)
+                {
+                    s = CONC[k, j];
+
+                    if (s > 0)
+                    {
+                         LN_A[k, j] = Math.Log(s);
+                    }
+                    else
+                    {
+                         LN_A[k, j] = -30;                         
+                    }
+
+                    s1 = 0.00;
+
+                    for (int i = 1; i <= KOM_OV; i++)
+                    {
+                        s1 += s * ARR[i, j];
+                    }
+
+                    CO_BAZIS[k, j] = s1;
+
+                }
+
+                IONIC[k] = 0;
+            }
+
+            //цикл по растворам
+            for (int k = 1; k <= R_ROV; k++)
+            {
+                double ion_1 = IONIC[k];
+                double ion_2 = 10;
+            A:;
+                for (int i = 1; i <= CHASTIC; i++)
+                {
+                    s = 0;
+                    s1 = Math.Sqrt(ion_1);
+                    for (int j = 1; j <= BAZIS; j++)
+                    {
+                        s += NU_MATRIX[i, j] * LN_A[k, j];
+                    }
+
+                    s3 = (-A_DEBYE * s1 / (1 + A_0A * B_DEBYE * s1) + B_DEB * ion_1);
+                    LN_GAMMA[k, i] = Math.Log(10) * Math.Pow(CHARGE[0, i], 2) * s3;
+
+                    C_EQUIL[k, i] = Math.Exp(LGK[0, i]) * Math.Log(10) + s - LN_GAMMA[k, i];
+                }
+
+                s3 = 0;
+                double[] G = new double[10];
+
+                for (int l = 1; l <= BAZIS; l++)
+                {
+                    s = 0;
+
+                    for (int i = 1; i <= CHASTIC; i++)
+                    {
+                        s += NU_MATRIX[i, l] * C_EQUIL[k, i];
+                    }
+                    
+                    G[l] = CO_BAZIS[k, l] - s;
+                    s3 += Math.Abs(G[l]) / CO_BAZIS[k, l];
+                }
+
+                if (s3 < S_I)
+                {
+                    goto B;
+                }
+
+                //создание матрицы H()
+                double[,] H = new double[10, 10];
+
+                for (int l = 1; l <= BAZIS; l++)
+                {
+                    for (int j = l; j <= BAZIS; j++)
+                    {
+                        s = 0;
+
+                        for (int i = 1; i <= CHASTIC; i++)
+                        {
+                            s += NU_MATRIX[i, l] * C_EQUIL[k, i] * NU_MATRIX[i, j];
+                        }
+                                                
+                        H[l, j] = s;
+                        H[j, l] = s;
+                    }
+                }
+
+                /*
+                 * Обернуть матрицу. Обращение на C#
+                */
+
+                //Произведение H^(-1)*G
+
+                sum_delta = 0;
+
+                for (int j = 1; j <= BAZIS; j++)
+                {
+                    s = 0;
+
+                    for (int l = 1; l <= BAZIS; l++)
+                    {
+                        s += H[j, l] * G[l];
+                    }
+
+                    DELTA_LN_A[j] = s;
+                    sum_delta += Math.Abs(s);
+                }
+
+                //Критерий выхода по норме поправок
+
+                if (sum_delta < 0.000001)
+                {
+                    goto B;
+                }
+
+                for (int j = 1; j <= BAZIS; j++)
+                {
+                    LN_A[k, j] += DELTA_LN_A[j] * 0.5; //koef 0.5
+                }
+
+                goto A;
+
+            B:;
+                s = 0;
+
+                for (int i = 1; i <= CHASTIC; i++)
+                {
+                    s += Math.Pow(CHARGE[0, i], 2) * C_EQUIL[k, i];
+                }
+
+                ion_1 = s / 2;
+
+                if (((Math.Abs(ion_2 - ion_1) / ion_1)) <= S_I)
+                {
+                    IONIC[k] = ion_1;
+                }
+                else
+                {
+                    ion_2 = ion_1;
+                    goto A;
+                }
+            }
         }
     }
 }
