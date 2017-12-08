@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
+
 namespace CCPD_v1._0._0._0._1
 {
 
@@ -16,6 +18,530 @@ namespace CCPD_v1._0._0._0._1
         public Form1()
         {
             InitializeComponent();
+        }
+
+        //Функция из VisualBasic
+        public double[,] Invers(int n, double[,] b)
+        {
+            int[,] r = new int[10, 4];
+            int l = 0;
+            int m = 0;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int ja = 0;
+            int jb = 0;
+            int nj = 0;
+            double s = 0;
+            double amax = 0;
+            double p = 0;
+            double c = 0;
+            double[] cc = new double[10];
+
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < 3; j++)
+                {
+                    r[i, j] = 0;
+                }
+
+                p = Math.Abs(b[i, i]);
+
+                if (p <= 1E-20)
+                {
+                    k = 2;
+                }
+                else if (p <= 1)
+                {
+                    k = 1;
+                }
+                else if (p < 9)
+                {
+                    k = 2;
+                }
+                else
+                {
+                    k = 3;
+                }
+
+                j = 0;
+
+                switch (k)
+                {
+                    case 1:
+                        s = 4;
+                        while (p <= 2)
+                        {
+                            j += 1;
+                            p *= s;
+                        }
+                        break;
+                    case 3:
+                        s = 1 / 4;
+                        while (p >= 9)
+                        {
+                            j += 1;
+                            p *= s;
+                        }
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
+
+                if (k == 3)
+                {
+                    nj = -j;
+                }
+                else
+                {
+                    nj = j;
+                }
+
+                cc[i] = Math.Exp(nj * Math.Log(2));
+            }
+
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < n; j++)
+                {
+                    b[i, j] = b[i, j] * cc[i] * cc[j];
+                }
+            }
+
+            for (i = 0; i < n; i++)
+            {
+                amax = 0;
+
+                for (j = 0; j < n; j++)
+                {
+                    if (r[j, 2] != 1)
+                    {
+                        for (k = 0; k < n; k++)
+                        {
+                            s = Math.Abs(b[j, k]);
+                            if ((r[k, 2] != 1) && (amax < s))
+                            {
+                                ja = j;
+                                jb = k;
+                                amax = s;
+                            }
+                        }
+                    }
+                }
+
+                r[jb, 2] = 1;
+                r[i, 0] = ja;
+                r[i, 1] = jb;
+
+                if (ja != jb)
+                {
+                    for (m = 0; m < n; m++)
+                    {
+                        s = b[ja, m];
+                        b[ja, m] = b[jb, m];
+                        b[jb, m] = s;
+                    }
+                }
+
+                s = b[jb, jb];
+                b[jb, jb] = 1;
+
+                for (m = 0; m < n; m++)
+                {
+                    b[jb, m] /= s;
+                }
+
+                for (m = 0; m < n; m++)
+                {
+                    if (m != jb)
+                    {
+                        c = b[m, jb];
+                        b[m, jb] = 0;
+                    }
+
+                    for (l = 0; l < n; l++)
+                    {
+                        b[m, l] -= b[jb, l] * c;
+                    }
+                }
+            }
+
+            for (i = 0; i < n; i++)
+            {
+                m = n - i + 1;
+
+                if (r[m, 0] != r[m, 1])
+                {
+                    ja = r[m, 0];
+                    jb = r[m, 1];
+
+                    for (k = 0; k < n; k++)
+                    {
+                        s = b[k, ja];
+                        b[k, ja] = b[k, jb];
+                        b[k, jb] = s;
+                    }
+                }
+            }
+
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < n; j++)
+                {
+                    b[i, j] = b[i, j] * cc[i] * cc[j];
+                }
+            }
+
+            return b;
+        }
+
+        /*
+        static int Opredelitel(int[,] matrix, int N)
+        {
+            int opredelitel = 0;
+            if (N != 1)
+            {
+                for (int i = 0; i < N; i++)
+                {
+                    if (i % 2 == 0) opredelitel += matrix[0, i] * Opredelitel(CopyMatrix(matrix, N, 0, i), N - 1);
+                    else opredelitel -= matrix[0, i] * Opredelitel(CopyMatrix(matrix, N, 0, i), N - 1);
+                }
+            }
+            else return (matrix[0, 0]);
+            return (opredelitel);
+        }
+
+        static int[,] MatrixMinor(int[,] fmatrix, int N)
+        {
+            int[,] smatrix = new int[N, N];
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    smatrix[i, j] = Opredelitel(CopyMatrix(fmatrix, N, i, j), N - 1);
+                }
+            }
+            return (smatrix);
+        }
+
+        static int[,] Transponiruem(int[,] fmatrix, int N)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    if ((i + j) % 2 != 0) fmatrix[i, j] *= (-1);
+                }
+            }
+            int[,] smatrix = new int[N, N];
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    smatrix[j, i] = fmatrix[i, j];
+                }
+            }
+            return (smatrix);
+        }
+
+        public static int ConvertTo31(int value)
+        {
+            int cel = value / 33;
+            if (value > 0)
+            {
+                value -= cel * 33;
+            }
+            else
+            {
+                if (Math.Abs(cel) != 0) value += (Math.Abs(cel) + 1) * 33;
+                else value = 0;
+            }
+            return (value);
+        }
+
+        public static void ConvertMatrixTo31(ref int[,] matrix, int N)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    matrix[i, j] = ConvertTo31(matrix[i, j]);
+                }
+            }
+        }
+
+        static int PoiskOpr(int opr)
+        {
+            for (int i = 0; i < 10000000; i++)
+            {
+                if ((i * opr) % 33 == 1) return (i);
+            }
+            return (-1);
+        }
+
+        static int[,] ObrMatrix(int[,] matrix, int N, int opr)
+        {
+            opr = PoiskOpr(opr);
+            if (opr == -1) return (null);
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    matrix[i, j] *= opr;
+                }
+            }
+            ConvertMatrixTo31(ref matrix, N);
+            return (matrix);
+        }
+
+        public static int[,] FindingInverseMatrix(int[,] Matrix, int Count)
+        {
+            int opredelitel = ConvertTo31(Opredelitel(Matrix, Count));
+            if (opredelitel == -1) return (null);
+            if (opredelitel == 0) return (null);
+            int[,] Mmatrix = MatrixMinor(Matrix, Count);
+            int[,] TMmatrix = Transponiruem(Mmatrix, Count);
+            int[,] obrMatrix = ObrMatrix(TMmatrix, Count, opredelitel);
+            return (obrMatrix);
+        }
+        */
+
+        public static Tuple<double[][], int[]> LUPDecomposition(double[][] A)
+        {
+            int n = A.Length - 1;
+            /*
+            * pi represents the permutation matrix.  We implement it as an array
+            * whose value indicates which column the 1 would appear.  We use it to avoid 
+            * dividing by zero or small numbers.
+            * */
+            int[] pi = new int[n + 1];
+            double p = 0;
+            int kp = 0;
+            int pik = 0;
+            int pikp = 0;
+            double aki = 0;
+            double akpi = 0;
+
+            //Initialize the permutation matrix, will be the identity matrix
+            for (int j = 0; j <= n; j++)
+            {
+                pi[j] = j;
+            }
+
+            for (int k = 0; k <= n; k++)
+            {
+                /*
+                * In finding the permutation matrix p that avoids dividing by zero
+                * we take a slightly different approach.  For numerical stability
+                * We find the element with the largest 
+                * absolute value of those in the current first column (column k).  If all elements in
+                * the current first column are zero then the matrix is singluar and throw an
+                * error.
+                * */
+                p = 0;
+                for (int i = k; i <= n; i++)
+                {
+                    if (Math.Abs(A[i][k]) > p)
+                    {
+                        p = Math.Abs(A[i][k]);
+                        kp = i;
+                    }
+                }
+                if (p == 0)
+                {
+                    throw new Exception("singular matrix");
+                }
+                /*
+                * These lines update the pivot array (which represents the pivot matrix)
+                * by exchanging pi[k] and pi[kp].
+                * */
+                pik = pi[k];
+                pikp = pi[kp];
+                pi[k] = pikp;
+                pi[kp] = pik;
+
+                /*
+                * Exchange rows k and kpi as determined by the pivot
+                * */
+                for (int i = 0; i <= n; i++)
+                {
+                    aki = A[k][i];
+                    akpi = A[kp][i];
+                    A[k][i] = akpi;
+                    A[kp][i] = aki;
+                }
+
+                /*
+                    * Compute the Schur complement
+                    * */
+                for (int i = k + 1; i <= n; i++)
+                {
+                    A[i][k] = A[i][k] / A[k][k];
+                    for (int j = k + 1; j <= n; j++)
+                    {
+                        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
+                    }
+                }
+            }
+            return Tuple.Create(A, pi);
+        }
+
+        public static double[] LUPSolve(double[][] LU, int[] pi, double[] b)
+        {
+            int n = LU.Length - 1;
+            double[] x = new double[n + 1];
+            double[] y = new double[n + 1];
+            double suml = 0;
+            double sumu = 0;
+            double lij = 0;
+
+            /*
+            * Solve for y using formward substitution
+            * */
+            for (int i = 0; i <= n; i++)
+            {
+                suml = 0;
+                for (int j = 0; j <= i - 1; j++)
+                {
+                    /*
+                    * Since we've taken L and U as a singular matrix as an input
+                    * the value for L at index i and j will be 1 when i equals j, not LU[i][j], since
+                    * the diagonal values are all 1 for L.
+                    * */
+                    if (i == j)
+                    {
+                        lij = 1;
+                    }
+                    else
+                    {
+                        lij = LU[i][j];
+                    }
+                    suml = suml + (lij * y[j]);
+                }
+                y[i] = b[pi[i]] - suml;
+            }
+            //Solve for x by using back substitution
+            for (int i = n; i >= 0; i--)
+            {
+                sumu = 0;
+                for (int j = i + 1; j <= n; j++)
+                {
+                    sumu = sumu + (LU[i][j] * x[j]);
+                }
+                x[i] = (y[i] - sumu) / LU[i][i];
+            }
+            return x;
+        }
+
+        public static double[][] InvertMatrix(double[][] A)
+        {
+            int n = A.Length;
+            //e will represent each column in the identity matrix
+            double[] e;
+            //x will hold the inverse matrix to be returned
+            double[][] x = new double[n][];
+            for (int i = 0; i < n; i++)
+            {
+                x[i] = new double[A[i].Length];
+            }
+            /*
+            * solve will contain the vector solution for the LUP decomposition as we solve
+            * for each vector of x.  We will combine the solutions into the double[][] array x.
+            * */
+            double[] solve;
+
+            //Get the LU matrix and P matrix (as an array)
+            Tuple<double[][], int[]> results = LUPDecomposition(A);
+
+            double[][] LU = results.Item1;
+            int[] P = results.Item2;
+
+            /*
+            * Solve AX = e for each column ei of the identity matrix using LUP decomposition
+            * */
+            for (int i = 0; i < n; i++)
+            {
+                e = new double[A[i].Length];
+                e[i] = 1;
+                solve = LUPSolve(LU, P, e);
+                for (int j = 0; j < solve.Length; j++)
+                {
+                    x[j][i] = solve[j];
+                }
+            }
+            return x;
+        }
+
+        public static void InvMax(int n, double[,] M, double[,] MMASS)
+        {
+            int i, j, k, N1;
+            double s, t;
+            double[,] a = new double[20, 40];
+
+            N1 = 2 * n;
+
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < N1; j++)
+                {
+                    if (j < n)
+                    {
+                        a[i, j] = M[i, j];
+                    }
+                    else if (j == n + i)
+                    {
+                        a[i, j] = 1;
+                    }
+                    else
+                    {
+                        a[i, j] = 0;
+                    }
+                }
+            }
+
+            for (i = 0; i <= n; i++)
+            {
+                k = i;
+                s = a[i, i];
+
+                for (j = i + 1; j <= n; j++)
+                {
+                    t = a[j, i];
+                    if (Math.Abs(s) < Math.Abs(t))
+                    {
+                        s = t;
+                        k = j;
+                    }
+                }
+
+                for (j = i; j <= N1; j++)
+                {
+                    t = a[k, j];
+                    a[k, j] = a[i, j];
+                    a[i, j] = t / s;
+                }
+
+                for (k = 0; k <= n; k++)
+                {
+                    if (k != i)
+                    {
+                        for (j = N1; j <= i; j++)
+                        {
+                            a[k, j] = a[k, j] - a[i, j] * a[k, i];
+                        }
+                    }
+                }
+            }            
+
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < n; j++)
+                {
+                    MMASS[i, j] = a[i, j + n];
+                }
+            }            
         }
 
         Int32 KOM_OV = 2;
@@ -518,7 +1044,7 @@ namespace CCPD_v1._0._0._0._1
                 }
 
                 /*
-                 * Обернуть матрицу. Обращение на C#
+                 * Обернуть матрицу. Обращение на C#. Вставка функции Inverse Matrix.
                 */
 
                 //Произведение H^(-1)*G
@@ -573,5 +1099,21 @@ namespace CCPD_v1._0._0._0._1
                 }
             }
         }
+
+        private void button21_Click(object sender, EventArgs e)
+        {
+            //TEST BUTTON #21
+            //Проверка обращения матрицы
+
+            //Проверочный тестовый массив
+            //{{1.00, 7.00, 9.00}, {2.00, 6.00, 2.00}, {4.00, 74.00, 0.00}};
+            double[,] MAZ = new double[3,3] { { 1.00, 7.00, 9.00 }, { 2.00, 6.00, 2.00 }, { 4.00, 74.00, 0.00 } };
+            //Запись значений из тестового массива для проверки
+            double[,] MAZZ = new double[3,3];
+
+            //Проверка работы функции
+            MAZZ = Invers(3, MAZ);            
+        }
     }
 }
+
