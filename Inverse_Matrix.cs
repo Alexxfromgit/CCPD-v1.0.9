@@ -1,28 +1,29 @@
-        public double Invers(int n, double[,] b)
+        public double[,] Invers(int n, double[,] b)
         {
-            int[,] r = new int[20, 3];
-            int l, m, i, j, k, ja, jb, nj;
-            double s, c, amax, p;
-            double[] cc = new double[20];
-            
-            void Scale(){                
-                for (i = 1; i <= n; i++)
-                {
-                    for (j = 1; j<= n; j++)
-                    {
-                        b[i, j] *= cc[i] * cc[j];                        
-                    }
-                }
-            }
+            int[,] r = new int[10, 4];
+            int l = 0;
+            int m = 0;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            int ja = 0;
+            int jb = 0;
+            int nj = 0;
+            double s = 0;
+            double amax = 0;
+            double p = 0;
+            double c = 0;
+            double[] cc = new double[10];
 
-            for (i = 1; i < n; i++)
+            for (i = 0; i < n; i++)
             {
-                for (j = 1; j<=3; j++)
+                for (j = 0; j < 3; j++)
                 {
-                    r[i, j] = 0;                    
+                    r[i, j] = 0;
                 }
 
                 p = Math.Abs(b[i, i]);
+
                 if (p <= 1E-20)
                 {
                     k = 2;
@@ -31,7 +32,7 @@
                 {
                     k = 1;
                 }
-                else if (p <= 9)
+                else if (p < 9)
                 {
                     k = 2;
                 }
@@ -39,6 +40,7 @@
                 {
                     k = 3;
                 }
+
                 j = 0;
 
                 switch (k)
@@ -60,7 +62,7 @@
                         }
                         break;
                     case 2:
-                        break;                 
+                        break;
                     default:
                         break;
                 }
@@ -74,23 +76,29 @@
                     nj = j;
                 }
 
-                cc[i] = Math.Exp(nj * Math.Log(2));                
+                cc[i] = Math.Exp(nj * Math.Log(2));
             }
 
-            Scale();
-
-            for (i = 1; i <= n; i++)
+            for (i = 0; i < n; i++)
             {
-                amax = 0.00;
-
-                for (j = 1; j <= n; j++)
+                for (j = 0; j < n; j++)
                 {
-                    if (r[j, 3] != 1)
+                    b[i, j] = b[i, j] * cc[i] * cc[j];
+                }
+            }
+
+            for (i = 0; i < n; i++)
+            {
+                amax = 0;
+
+                for (j = 0; j < n; j++)
+                {
+                    if (r[j, 2] != 1)
                     {
-                        for (k = 1; k <= n; k++)
+                        for (k = 0; k < n; k++)
                         {
                             s = Math.Abs(b[j, k]);
-                            if ((r[k, 3] != 1) && (amax < s))
+                            if ((r[k, 2] != 1) && (amax < s))
                             {
                                 ja = j;
                                 jb = k;
@@ -100,18 +108,13 @@
                     }
                 }
 
-                if (amax < 1E-70)
-                {
-                    goto A;
-                }
-
-                r[jb, 3] = 1;
-                r[i, 1] = ja;
-                r[i, 2] = jb;
+                r[jb, 2] = 1;
+                r[i, 0] = ja;
+                r[i, 1] = jb;
 
                 if (ja != jb)
                 {
-                    for (m = 1; m <= n; m++)
+                    for (m = 0; m < n; m++)
                     {
                         s = b[ja, m];
                         b[ja, m] = b[jb, m];
@@ -122,12 +125,12 @@
                 s = b[jb, jb];
                 b[jb, jb] = 1;
 
-                for (m = 1; m <= n; m++)
+                for (m = 0; m < n; m++)
                 {
                     b[jb, m] /= s;
                 }
 
-                for (m = 1; m <= n; m++)
+                for (m = 0; m < n; m++)
                 {
                     if (m != jb)
                     {
@@ -135,22 +138,23 @@
                         b[m, jb] = 0;
                     }
 
-                    for (l = 1; l <= n; l++)
+                    for (l = 0; l < n; l++)
                     {
                         b[m, l] -= b[jb, l] * c;
                     }
                 }
             }
 
-            for (i = 1; i <= n; i++)
+            for (i = 0; i < n; i++)
             {
                 m = n - i + 1;
-                if (r[m, 1] != r[m, 2])
-                {
-                    ja = r[m, 1];
-                    jb = r[m, 2];
 
-                    for (k = 1; k <= n; k++)
+                if (r[m, 0] != r[m, 1])
+                {
+                    ja = r[m, 0];
+                    jb = r[m, 1];
+
+                    for (k = 0; k < n; k++)
                     {
                         s = b[k, ja];
                         b[k, ja] = b[k, jb];
@@ -159,9 +163,13 @@
                 }
             }
 
-            Scale();
-            
-        A:;
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < n; j++)
+                {
+                    b[i, j] = b[i, j] * cc[i] * cc[j];
+                }
+            }
 
-            return 0;
+            return b;
         }
