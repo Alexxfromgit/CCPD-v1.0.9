@@ -596,7 +596,7 @@ namespace CCPD_v1._0._0._0._1
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("CCPD\nversion - 1.0.0.0.4");
+            MessageBox.Show("CCPD\nversion - 1.0.5");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -953,29 +953,34 @@ namespace CCPD_v1._0._0._0._1
             //Подготова начальных значений 
             double s, s1, s3, sum_delta;
 
-            for (int k = 1; k <= R_ROV; k++)
+            int count = 0;
+
+            for (int k = 0; k < R_ROV; k++)
             {
-                for (int j = 1; j <= BAZIS; j++)
+                count = 0;
+
+                for (int j = 0; j < BAZIS; j++)
                 {
-                    s = CONC[k, j];
+                    //s = CONC[k, j];
 
-                    if (s > 0)
-                    {
-                         LN_A[k, j] = Math.Log(s);
-                    }
-                    else
-                    {
-                         LN_A[k, j] = -30;                         
-                    }
+                    s1 = 0;
 
-                    s1 = 0.00;
-
-                    for (int i = 1; i <= KOM_OV; i++)
+                    for (int i = 0; i < KOM_OV; i++)
                     {
-                        s1 += s * ARR[i, j];
+                        //s1 = s1 + s * ARR[i, j];
+                        s1 = s1 + CONC[k, i] * ARR[i, j];
                     }
 
                     CO_BAZIS[k, j] = s1;
+
+                    if (s1 > 0)
+                    {
+                        LN_A[k, j] = Math.Log(s1 / 3);
+                    }
+                    else
+                    {
+                        LN_A[k, j] = -30;
+                    }
 
                 }
 
@@ -983,40 +988,41 @@ namespace CCPD_v1._0._0._0._1
             }
 
             //цикл по растворам
-            for (int k = 1; k <= R_ROV; k++)
+            for (int k = 0; k < R_ROV; k++)
             {
                 double ion_1 = IONIC[k];
                 double ion_2 = 10;
             A:;
-                for (int i = 1; i <= CHASTIC; i++)
+                for (int i = 0; i < CHASTIC; i++)
                 {
                     s = 0;
                     s1 = Math.Sqrt(ion_1);
-                    for (int j = 1; j <= BAZIS; j++)
+                    for (int j = 0; j < BAZIS; j++)
                     {
-                        s += NU_MATRIX[i, j] * LN_A[k, j];
+                        s = s + NU_MATRIX[i, j] * LN_A[k, j];
                     }
 
                     s3 = (-A_DEBYE * s1 / (1 + A_0A * B_DEBYE * s1) + B_DEB * ion_1);
-                    LN_GAMMA[k, i] = Math.Log(10) * Math.Pow(CHARGE[0, i], 2) * s3;
+                    LN_GAMMA[k, i] = Math.Log(10) * Math.Pow(CHARGE[i, 0], 2) * s3;
 
-                    C_EQUIL[k, i] = Math.Exp(LGK[0, i]) * Math.Log(10) + s - LN_GAMMA[k, i];
+                    C_EQUIL[k, i] = Math.Exp(LGK[i, 0]) * Math.Log(10) + s - LN_GAMMA[k, i];
                 }
 
                 s3 = 0;
+
                 double[] G = new double[10];
 
-                for (int l = 1; l <= BAZIS; l++)
+                for (int l = 0; l < BAZIS; l++)
                 {
                     s = 0;
 
-                    for (int i = 1; i <= CHASTIC; i++)
+                    for (int i = 0; i < CHASTIC; i++)
                     {
-                        s += NU_MATRIX[i, l] * C_EQUIL[k, i];
+                        s = s + NU_MATRIX[i, l] * C_EQUIL[k, i];
                     }
                     
                     G[l] = CO_BAZIS[k, l] - s;
-                    s3 += Math.Abs(G[l]) / CO_BAZIS[k, l];
+                    s3 = s3 + Math.Abs(G[l]) / CO_BAZIS[k, l];
                 }
 
                 if (s3 < S_I)
@@ -1024,38 +1030,71 @@ namespace CCPD_v1._0._0._0._1
                     goto B;
                 }
 
+                double[,] H0 = new double[10, 10];
+                double[,] H1 = new double[10, 10];
+
                 //создание матрицы H()
                 double[,] H = new double[10, 10];
 
-                for (int l = 1; l <= BAZIS; l++)
+                for (int l = 0; l < BAZIS; l++)
                 {
-                    for (int j = l; j <= BAZIS; j++)
+                    for (int j = l; j < BAZIS; j++)
                     {
                         s = 0;
 
-                        for (int i = 1; i <= CHASTIC; i++)
+                        for (int i = 0; i < CHASTIC; i++)
                         {
                             s += NU_MATRIX[i, l] * C_EQUIL[k, i] * NU_MATRIX[i, j];
                         }
                                                 
                         H[l, j] = s;
                         H[j, l] = s;
+                        
+                        H1[l, j] = s;
+                        H1[j, l] = s;
+                        
                     }
                 }
 
                 /*
-                 * Обернуть матрицу. Обращение на C#. Вставка функции Inverse Matrix.
+                 * Обернуть матрицу. Обращение на C#
                 */
 
+                
+
+                H0 = Invers(BAZIS, H);
+
+
+
+                s1 = 0;
+
+                for (int i = 0; i < BAZIS; i++)
+                {
+                    for (int j = 0; j < BAZIS; j++)
+                    {
+                        s = 0;
+
+                        for (int r = 0; r < BAZIS; r++)
+                        {
+                            s = s + H0[i, r] * H1[r, j];                            
+                        }
+
+                        s1 = s1 + Math.Abs(s);                        
+                    }
+                }
+
+                textBox20.Text = Convert.ToString(s1);
+
+                
+                
                 //Произведение H^(-1)*G
-
+                
                 sum_delta = 0;
-
-                for (int j = 1; j <= BAZIS; j++)
+                for (int j = 0; j < BAZIS; j++)
                 {
                     s = 0;
 
-                    for (int l = 1; l <= BAZIS; l++)
+                    for (int l = 0; l < BAZIS; l++)
                     {
                         s += H[j, l] * G[l];
                     }
@@ -1063,31 +1102,24 @@ namespace CCPD_v1._0._0._0._1
                     DELTA_LN_A[j] = s;
                     sum_delta += Math.Abs(s);
                 }
-
                 //Критерий выхода по норме поправок
-
                 if (sum_delta < 0.000001)
                 {
                     goto B;
                 }
-
-                for (int j = 1; j <= BAZIS; j++)
+                for (int j = 0; j < BAZIS; j++)
                 {
-                    LN_A[k, j] += DELTA_LN_A[j] * 0.5; //koef 0.5
+                    LN_A[k, j] -= DELTA_LN_A[j] * 0.1;       //    koef 0.5
                 }
-
+                count += 1;
                 goto A;
-
             B:;
                 s = 0;
-
-                for (int i = 1; i <= CHASTIC; i++)
+                for (int i = 0; i < CHASTIC; i++)
                 {
-                    s += Math.Pow(CHARGE[0, i], 2) * C_EQUIL[k, i];
+                    s += Math.Pow(CHARGE[i, 0], 2) * C_EQUIL[k, i];
                 }
-
                 ion_1 = s / 2;
-
                 if (((Math.Abs(ion_2 - ion_1) / ion_1)) <= S_I)
                 {
                     IONIC[k] = ion_1;
@@ -1098,6 +1130,21 @@ namespace CCPD_v1._0._0._0._1
                     goto A;
                 }
             }
+
+            //Эксперементальные данные. Вывод из масива CONC в грид7
+            /*
+            dataGridView9.RowCount = R_ROV;
+            dataGridView9.ColumnCount = BAZIS;
+
+            for (int j = 0; j < R_ROV; j++)
+            {
+                for (int i = 0; i < BAZIS; i++)
+                {
+                    dataGridView9.Rows[j].Cells[i].Value = LN_A[j, i].ToString();
+                    //dataGridView9.Rows[j].HeaderCell.Value = Convert.ToString(j + 1);
+                    //dataGridView9.Columns[i].HeaderCell.Value = COMPONENTS[0, i];
+                }
+            }   */         
         }
 
         private void button21_Click(object sender, EventArgs e)
