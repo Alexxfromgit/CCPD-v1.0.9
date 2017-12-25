@@ -1,0 +1,13 @@
+№ Customer requirements up to 2018:
+
+1. Fill header columns in Component Matrix
+2. Position of Main Form upper left corner (not center)
+3. Resolution of Main Form less than 1280x1024
+4. Change font for captions of data entry blocks
+5. Grouping of input blocks by sections using groupbox
+6. Changing Default Values in first input blocks
+7. Changing signatures of values in first input block
+8. Changing input field in first input block in numerical item
+9. Centering values in matrices
+10. Аixed size of columns and rows signatures in datagrid blocks
+11. Adding the copy option from the Excel table to the matrix in the program in datagrid blocks
