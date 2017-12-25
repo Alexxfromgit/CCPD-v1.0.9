@@ -197,117 +197,7 @@ namespace CCPD_v1._0._0._0._1
             return b;
         }
 
-        /*
-        static int Opredelitel(int[,] matrix, int N)
-        {
-            int opredelitel = 0;
-            if (N != 1)
-            {
-                for (int i = 0; i < N; i++)
-                {
-                    if (i % 2 == 0) opredelitel += matrix[0, i] * Opredelitel(CopyMatrix(matrix, N, 0, i), N - 1);
-                    else opredelitel -= matrix[0, i] * Opredelitel(CopyMatrix(matrix, N, 0, i), N - 1);
-                }
-            }
-            else return (matrix[0, 0]);
-            return (opredelitel);
-        }
-
-        static int[,] MatrixMinor(int[,] fmatrix, int N)
-        {
-            int[,] smatrix = new int[N, N];
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    smatrix[i, j] = Opredelitel(CopyMatrix(fmatrix, N, i, j), N - 1);
-                }
-            }
-            return (smatrix);
-        }
-
-        static int[,] Transponiruem(int[,] fmatrix, int N)
-        {
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    if ((i + j) % 2 != 0) fmatrix[i, j] *= (-1);
-                }
-            }
-            int[,] smatrix = new int[N, N];
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    smatrix[j, i] = fmatrix[i, j];
-                }
-            }
-            return (smatrix);
-        }
-
-        public static int ConvertTo31(int value)
-        {
-            int cel = value / 33;
-            if (value > 0)
-            {
-                value -= cel * 33;
-            }
-            else
-            {
-                if (Math.Abs(cel) != 0) value += (Math.Abs(cel) + 1) * 33;
-                else value = 0;
-            }
-            return (value);
-        }
-
-        public static void ConvertMatrixTo31(ref int[,] matrix, int N)
-        {
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    matrix[i, j] = ConvertTo31(matrix[i, j]);
-                }
-            }
-        }
-
-        static int PoiskOpr(int opr)
-        {
-            for (int i = 0; i < 10000000; i++)
-            {
-                if ((i * opr) % 33 == 1) return (i);
-            }
-            return (-1);
-        }
-
-        static int[,] ObrMatrix(int[,] matrix, int N, int opr)
-        {
-            opr = PoiskOpr(opr);
-            if (opr == -1) return (null);
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    matrix[i, j] *= opr;
-                }
-            }
-            ConvertMatrixTo31(ref matrix, N);
-            return (matrix);
-        }
-
-        public static int[,] FindingInverseMatrix(int[,] Matrix, int Count)
-        {
-            int opredelitel = ConvertTo31(Opredelitel(Matrix, Count));
-            if (opredelitel == -1) return (null);
-            if (opredelitel == 0) return (null);
-            int[,] Mmatrix = MatrixMinor(Matrix, Count);
-            int[,] TMmatrix = Transponiruem(Mmatrix, Count);
-            int[,] obrMatrix = ObrMatrix(TMmatrix, Count, opredelitel);
-            return (obrMatrix);
-        }
-        */
-
+        //Функция обратной матрицы из нескольких частей1
         public static Tuple<double[][], int[]> LUPDecomposition(double[][] A)
         {
             int n = A.Length - 1;
@@ -387,7 +277,7 @@ namespace CCPD_v1._0._0._0._1
             }
             return Tuple.Create(A, pi);
         }
-
+        //Функция обратной матрицы из нескольких частей2
         public static double[] LUPSolve(double[][] LU, int[] pi, double[] b)
         {
             int n = LU.Length - 1;
@@ -434,7 +324,7 @@ namespace CCPD_v1._0._0._0._1
             }
             return x;
         }
-
+        //Функция обратной матрицы из нескольких частей3
         public static double[][] InvertMatrix(double[][] A)
         {
             int n = A.Length;
@@ -474,6 +364,7 @@ namespace CCPD_v1._0._0._0._1
             return x;
         }
 
+        //Тестовая функция обратной матрицы
         public static void InvMax(int n, double[,] M, double[,] MMASS)
         {
             int i, j, k, N1;
