@@ -487,7 +487,7 @@ namespace CCPD_v1._0._0._0._1
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("CCPD\nversion - 1.0.6");
+            MessageBox.Show("CCPD\nversion - 1.0.7");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -865,7 +865,7 @@ namespace CCPD_v1._0._0._0._1
 
                     if (s1 > 0)
                     {
-                        LN_A[k, j] = Math.Log(s1 / 3);
+                        LN_A[k, j] = Math.Log(s1 * 2);
                     }
                     else
                     {
@@ -877,7 +877,7 @@ namespace CCPD_v1._0._0._0._1
                 IONIC[k] = 0;
             }
 
-            double[] G = new double[10];
+            double[] G = new double[10];//нет в новой версии 1.0.7
 
             //цикл по растворам
 
@@ -917,14 +917,14 @@ namespace CCPD_v1._0._0._0._1
                     s3 = s3 + Math.Abs(G[L]) / CO_BAZIS[k, L];
                 }
 
-                if (s3 < S_I)
+                if (s3 < 1E-4)
                 {
                     goto B;
                 }
 
-                double[,] H = new double[10, 10];
-                double[,] H0 = new double[10, 10];
-                double[,] H1 = new double[10, 10];
+                double[,] H = new double[10, 10];//нет в новой версии 1.0.7
+                double[,] H0 = new double[10, 10];//нет в новой версии 1.0.7
+                double[,] H1 = new double[10, 10];//нет в новой версии 1.0.7
 
                 //создание матрицы H()
 
@@ -988,14 +988,14 @@ namespace CCPD_v1._0._0._0._1
 
                 //Критерий выхода по норме поправок
 
-                if (sum_delta < 0.00001)
+                if (sum_delta < 1E-5)
                 {
                     goto B;
                 }
 
                 for (int j = 0; j < BAZIS; j++)
                 {
-                    LN_A[k, j] += DELTA_LN_A[j] * 0.1;
+                    LN_A[k, j] += DELTA_LN_A[j] / 3;
                 }
 
                 count += 1;
@@ -1014,7 +1014,7 @@ namespace CCPD_v1._0._0._0._1
                 ion_1 = s / 2;
                 IONIC[k] = ion_1;
 
-                if (Math.Abs((ion_2 - ion_1) / ion_1) > S_I)
+                if (Math.Abs((ion_2 - ion_1) / ion_1) > 1E-3)
                 {
                     ion_2 = ion_1;
                     goto A;
@@ -1053,4 +1053,3 @@ namespace CCPD_v1._0._0._0._1
         }
     }
 }
-
