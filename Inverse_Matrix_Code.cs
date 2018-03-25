@@ -1,3 +1,4 @@
+//DONT USING IN BUILDS AFTER 1.0.6
 /*
 * Perform LUP decomposition on a matrix A.
 * Return L and U as a single matrix(double[][]) and P as an array of ints.
