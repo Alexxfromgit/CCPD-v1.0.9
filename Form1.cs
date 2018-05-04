@@ -40,29 +40,19 @@ namespace CCPD_v1._0._0._0._1
 
             for (i = 0; i < n; i++)
             {
-                for (j = 0; j < 3; j++)
-                {
-                    r[i, j] = 0;
-                }
+                for (j = 0; j < 3; j++)                
+                    r[i, j] = 0;                
 
                 p = Math.Abs(b[i, i]);
 
-                if (p <= 1E-20)
-                {
-                    k = 2;
-                }
-                else if (p <= 1)
-                {
-                    k = 1;
-                }
-                else if (p < 9)
-                {
-                    k = 2;
-                }
-                else
-                {
-                    k = 3;
-                }
+                if (p <= 1E-20) //NEED TO CHECK
+                    k = 2;                
+                else if (p <= 1)                
+                    k = 1;                
+                else if (p < 9)                
+                    k = 2;                
+                else                
+                    k = 3;                
 
                 j = 0;
 
@@ -90,81 +80,55 @@ namespace CCPD_v1._0._0._0._1
                         break;
                 }
 
-                if (k == 3)
-                {
-                    nj = -j;
-                }
-                else
-                {
-                    nj = j;
-                }
+                if (k == 3)                
+                    nj = -j;                
+                else                
+                    nj = j;                
 
                 cc[i] = Math.Exp(nj * Math.Log(2));
             }
 
-            for (i = 0; i < n; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    b[i, j] = b[i, j] * cc[i] * cc[j];
-                }
-            }
+            for (i = 0; i < n; i++)            
+                for (j = 0; j < n; j++)                
+                    b[i, j] = b[i, j] * cc[i] * cc[j];            
 
             for (i = 0; i < n; i++)
             {
                 amax = 0;
 
-                for (j = 0; j < n; j++)
-                {
-                    if (r[j, 2] != 1)
-                    {
-                        for (k = 0; k < n; k++)
-                        {
+                for (j = 0; j < n; j++)                
+                    if (r[j, 2] != 1)                    
+                        for (k = 0; k < n; k++)                        
                             s = Math.Abs(b[j, k]);
-                            if ((r[k, 2] != 1) && (amax < s))
-                            {
+                            if ((r[k, 2] != 1) && (amax < s))                            
                                 ja = j;
                                 jb = k;
-                                amax = s;
-                            }
-                        }
-                    }
-                }
+                                amax = s;                
 
                 r[jb, 2] = 1;
                 r[i, 0] = ja;
                 r[i, 1] = jb;
 
-                if (ja != jb)
-                {
-                    for (m = 0; m < n; m++)
-                    {
+                if (ja != jb)                
+                    for (m = 0; m < n; m++)                    
                         s = b[ja, m];
                         b[ja, m] = b[jb, m];
-                        b[jb, m] = s;
-                    }
-                }
+                        b[jb, m] = s;                
 
                 s = b[jb, jb];
                 b[jb, jb] = 1;
 
-                for (m = 0; m < n; m++)
-                {
-                    b[jb, m] /= s;
-                }
+                for (m = 0; m < n; m++)                
+                    b[jb, m] /= s;                
 
                 for (m = 0; m < n; m++)
                 {
-                    if (m != jb)
-                    {
+                    if (m != jb)                    
                         c = b[m, jb];
-                        b[m, jb] = 0;
-                    }
+                        b[m, jb] = 0;                    
 
-                    for (l = 0; l < n; l++)
-                    {
-                        b[m, l] -= b[jb, l] * c;
-                    }
+                    for (l = 0; l < n; l++)                    
+                        b[m, l] -= b[jb, l] * c;                    
                 }
             }
 
@@ -177,91 +141,83 @@ namespace CCPD_v1._0._0._0._1
                     ja = r[m, 0];
                     jb = r[m, 1];
 
-                    for (k = 0; k < n; k++)
-                    {
+                    for (k = 0; k < n; k++)                    
                         s = b[k, ja];
                         b[k, ja] = b[k, jb];
                         b[k, jb] = s;
-                    }
+                    
                 }
             }
 
-            for (i = 0; i < n; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    b[i, j] = b[i, j] * cc[i] * cc[j];
-                }
-            }
+            for (i = 0; i < n; i++)            
+                for (j = 0; j < n; j++)                
+                    b[i, j] = b[i, j] * cc[i] * cc[j];            
 
             return b;
         }
 
-        Int32 KOM_OV = 2;
-        Int32 CHASTIC = 5;
-        Int32 BAZIS = 3;
-        Int32 R_ROV = 10;
-        Int32 DIAGRAMA = 1;
-        double S_F = 0.0001;
-        double S_IN_A = 0.000001;
-        double S_I = 0.0001;
+        public Int32 KOM_OV = 2;
+        public Int32 CHASTIC = 5;
+        public Int32 BAZIS = 3;
+        public Int32 R_ROV = 10;
+        public Int32 DIAGRAMA = 1;
+        public double S_F = 0.0001;
+        public double S_IN_A = 0.000001;
+        public double S_I = 0.0001;
 
-        double T_C = 25.00;
-        double T_K = 299.15;
-        double W_SOL = 0.00;
-        double VISK = 0.008905;
-        double DP = 78.3;
-        double DENS = 0.99707;
-        double M2 = 0.00;
-        double M1 = 18.15;
+        public double T_C = 25.00;
+        public double T_K = 299.15;
+        public double W_SOL = 0.00;
+        public double VISK = 0.008905;
+        public double DP = 78.3;
+        public double DENS = 0.99707;
+        public double M2 = 0.00;
+        public double M1 = 18.15;
 
-        double A_DEBYE = 0.00;
-        double B_DEBYE = 0.00;
-        double A_0A = 3.5;
-        double B_DEB = 0.2;
-        double RT_F = 59.157;
-        double R_A = 3.5;
-        double E0_A = 222.00;
-        double N_E_B = 1.00;
+        public double A_DEBYE = 0.00;
+        public double B_DEBYE = 0.00;
+        public double A_0A = 3.5;
+        public double B_DEB = 0.2;
+        public double RT_F = 59.157;
+        public double R_A = 3.5;
+        public double E0_A = 222.00;
+        public double N_E_B = 1.00;
 
-        string lg_k = "lg(K)";
+        public string lg_k = "lg(K)";
 
-        Int32[,] ARR = new Int32[5, 10];
-        String[,] COMPONENTS = new String[1, 10];
-        String[,] BAS_NAME = new String[1, 10];
-        String[,] PARTICLES = new String[1, 15];
-        double[,] NU_MATRIX = new double[15, 10];
-        double[,] LGK = new double[15, 1];
-        Int32[,] CHARGE = new Int32[15, 1];
-        double[,] CONC = new double[60, 4];
-        double[,] DATA = new double[60, 1];
-        double[,] LN_A = new double[60, 8];
-        double[,] CO_BAZIS = new double[60, 8];
-        double[] IONIC = new double[60];
-        double[,] LN_GAMMA = new double[60, 10];
-        double[,] C_EQUIL = new double[60, 10];
-        double[] DELTA_LN_A = new double[10];
+        public Int32[,] ARR = new Int32[5, 10];
+        public String[,] COMPONENTS = new String[1, 10];
+        public String[,] BAS_NAME = new String[1, 10];
+        public String[,] PARTICLES = new String[1, 15];
+        public double[,] NU_MATRIX = new double[15, 10];
+        public double[,] LGK = new double[15, 1];
+        public Int32[,] CHARGE = new Int32[15, 1];
+        public double[,] CONC = new double[60, 4];
+        public double[,] DATA = new double[60, 1];
+        public double[,] LN_A = new double[60, 8];
+        public double[,] CO_BAZIS = new double[60, 8];
+        public double[] IONIC = new double[60];
+        public double[,] LN_GAMMA = new double[60, 10];
+        public double[,] C_EQUIL = new double[60, 10];
+        public double[] DELTA_LN_A = new double[10];
 
         private void Form1_Load(object sender, EventArgs e)
         {
             
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("CCPD\nversion - 1.0.8");
-        }
+        private void AboutToolStripMenuItem_Click(object sender, EventArgs e) => MessageBox.Show("CCPD\nversion - 1.0.9");
 
         private void button1_Click(object sender, EventArgs e)
         {
-            KOM_OV = Convert.ToInt32(textBox1.Text);
-            CHASTIC = Convert.ToInt32(textBox2.Text);
-            BAZIS = Convert.ToInt32(textBox3.Text);
-            R_ROV = Convert.ToInt32(textBox4.Text);
-            DIAGRAMA = Convert.ToInt32(textBox5.Text);
-            S_F = Convert.ToDouble(textBox6.Text);
-            S_IN_A = Convert.ToDouble(textBox7.Text);
-            S_I = Convert.ToDouble(textBox8.Text);
+            KOM_OV = Int32.Parse(textBox1.Text);
+            CHASTIC = Int32.Parse(textBox2.Text);
+            BAZIS = Int32.Parse(textBox3.Text);
+            R_ROV = Int32.Parse(textBox4.Text);
+            DIAGRAMA = Int32.Parse(textBox5.Text);
+            S_F = Double.Parse(textBox6.Text);
+            S_IN_A = Double.Parse(textBox7.Text);
+            S_I = Double.Parse(textBox8.Text);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -327,7 +283,6 @@ namespace CCPD_v1._0._0._0._1
         private void button5_Click(object sender, EventArgs e)
         {
             //Вывод значений из датагрид1 в массив ARR
-
             dataGridView1.RowCount = KOM_OV;
             dataGridView1.ColumnCount = BAZIS;
 
@@ -344,7 +299,6 @@ namespace CCPD_v1._0._0._0._1
         private void button6_Click(object sender, EventArgs e)
         {
             //Вывод значений в датагрид2 из массива COMPONENTS
-
             dataGridView2.RowCount = 1;
             dataGridView2.ColumnCount = KOM_OV;
 
@@ -362,7 +316,6 @@ namespace CCPD_v1._0._0._0._1
         private void button8_Click(object sender, EventArgs e)
         {
             //Вывод из датагрид2 в массив COMPONENTS сохранение значений
-
             dataGridView2.RowCount = 1;
             dataGridView2.ColumnCount = KOM_OV;
 
@@ -395,7 +348,6 @@ namespace CCPD_v1._0._0._0._1
             */
 
             //Вывод значений в датагрид3 из массива PARTICLES
-
             dataGridView3.RowCount = 1;
             dataGridView3.ColumnCount = CHASTIC;
 
@@ -413,7 +365,6 @@ namespace CCPD_v1._0._0._0._1
         private void button9_Click(object sender, EventArgs e)
         {
             //Вывод из датагрид3 в массив PARTICLES сохранение значений
-
             dataGridView3.RowCount = 1;
             dataGridView3.ColumnCount = CHASTIC;
 
@@ -429,7 +380,6 @@ namespace CCPD_v1._0._0._0._1
         private void button10_Click(object sender, EventArgs e)
         {
             //Стехиометрическая матрица
-
             dataGridView4.RowCount = CHASTIC;
             dataGridView4.ColumnCount = BAZIS;
 
@@ -452,7 +402,6 @@ namespace CCPD_v1._0._0._0._1
         private void button11_Click(object sender, EventArgs e)
         {
             //Вывод значений стехиометрической матрицы из датагрид4 в массив NU_MATRIX
-
             dataGridView4.RowCount = CHASTIC;
             dataGridView4.ColumnCount = BAZIS;
 
@@ -468,7 +417,6 @@ namespace CCPD_v1._0._0._0._1
         private void button12_Click(object sender, EventArgs e)
         {
             //Константы
-
             dataGridView5.RowCount = CHASTIC;
             dataGridView5.ColumnCount = 1;
 
@@ -486,7 +434,6 @@ namespace CCPD_v1._0._0._0._1
         private void button13_Click(object sender, EventArgs e)
         {
             //Вывод из грид5 данных в массив LGK
-
             dataGridView5.RowCount = CHASTIC;
             dataGridView5.ColumnCount = 1;
 
@@ -502,7 +449,6 @@ namespace CCPD_v1._0._0._0._1
         private void button14_Click(object sender, EventArgs e)
         {
             //Вывод в грид6 из массива CHARGE значений
-
             dataGridView6.RowCount = CHASTIC;
             dataGridView6.ColumnCount = 1;
 
@@ -520,7 +466,6 @@ namespace CCPD_v1._0._0._0._1
         private void button15_Click(object sender, EventArgs e)
         {
             //Вывод из грид6 данных в массив CHARGE
-
             dataGridView6.RowCount = CHASTIC;
             dataGridView6.ColumnCount = 1;
 
@@ -536,7 +481,6 @@ namespace CCPD_v1._0._0._0._1
         private void button16_Click(object sender, EventArgs e)
         {
             //Эксперементальные данные. Вывод из масива CONC в грид7
-
             dataGridView7.RowCount = R_ROV;
             dataGridView7.ColumnCount = KOM_OV;
 
@@ -554,7 +498,6 @@ namespace CCPD_v1._0._0._0._1
         private void button17_Click(object sender, EventArgs e)
         {
             //Вывод значений Эксперементальных данных из датагрид7 в массив CONC
-
             dataGridView7.RowCount = R_ROV;
             dataGridView7.ColumnCount = KOM_OV;
 
@@ -570,7 +513,6 @@ namespace CCPD_v1._0._0._0._1
         private void button18_Click(object sender, EventArgs e)
         {
             //Измерения. Вывод из масива DATA в грид8
-
             dataGridView8.RowCount = R_ROV;
             dataGridView8.ColumnCount = 1;
 
@@ -588,7 +530,6 @@ namespace CCPD_v1._0._0._0._1
         private void button19_Click(object sender, EventArgs e)
         {
             //Вывод значений Измерений из датагрид8 в массив DATA
-
             dataGridView8.RowCount = R_ROV;
             dataGridView8.ColumnCount = 1;
 
